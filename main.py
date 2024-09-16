@@ -1,10 +1,14 @@
-import sys
 import os
-import subprocess
+import logging
+import sys
 import time
+import subprocess
+from ctypes import *
+from PIL import Image, ImageDraw, ImageFont
 import RPi.GPIO as GPIO
 from waveshare_epd import epd2in13_V2
-from PIL import Image, ImageDraw, ImageFont
+
+logger = logging.getLogger(__name__)
 
 # GPIO pin configuration based on the pinout
 RST_PIN = 17
@@ -36,6 +40,27 @@ def display_logs(logs):
         print(f"Error: {e}")
     finally:
         GPIO.cleanup()
+
+class RaspberryPi:
+    # Pin definition
+    RST_PIN  = 17
+    DC_PIN   = 25
+    CS_PIN   = 8
+    BUSY_PIN = 24
+    PWR_PIN  = 18
+    MOSI_PIN = 10
+    SCLK_PIN = 11
+
+    def __init__(self):
+        import spidev
+        import gpiozero
+
+        self.SPI = spidev.SpiDev()
+        self.GPIO_RST_PIN    = gpiozero.LED(self.RST_PIN)
+        self.GPIO_DC_PIN     = gpiozero.LED(self.DC_PIN)
+        # self.GPIO_CS_PIN     = gpiozero.LED(self.CS_PIN)
+        self.GPIO_PWR_PIN    = gpiozero.LED(self.PWR_PIN)
+        self.GPIO_BUSY_PIN   = gpiozero.Button(self.BUSY_PIN, pull_up=False)
 
 if __name__ == "__main__":
     logs = fetch_logs()
