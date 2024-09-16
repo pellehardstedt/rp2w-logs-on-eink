@@ -32,28 +32,11 @@ def display_logs(logs):
         draw.text((0, 0), logs, font=font, fill=0)
 
         epd.display(epd.getbuffer(image))
-        epd.sleep()
-
-    except IOError as e:
-        print(e)
-
-def main():
-    # GPIO setup
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(RST_PIN, GPIO.OUT)
-    GPIO.setup(DC_PIN, GPIO.OUT)
-    GPIO.setup(CS_PIN, GPIO.OUT)
-    GPIO.setup(BUSY_PIN, GPIO.IN)
-
-    try:
-        while True:
-            logs = fetch_logs()
-            display_logs(logs)
-            time.sleep(4)
-    except KeyboardInterrupt:
-        print("Program interrupted")
+    except Exception as e:
+        print(f"Error: {e}")
     finally:
         GPIO.cleanup()
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    logs = fetch_logs()
+    display_logs(logs)
